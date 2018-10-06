@@ -1,6 +1,6 @@
 CREATE TABLE card (
   `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `uid` INT,
+  `project_id` INT,
   `title` VARCHAR(128)
 );
 
