@@ -41,7 +41,7 @@ public class TodoController {
     private RestTemplate restTemplate;
 
     @GetMapping("/{id:\\d+}")
-    public ResponseEntity find(@PathVariable Integer id){
+    public ResponseEntity find(@PathVariable Long id){
         Todo todo = todoRepository.findOne(id);
         if(todo==null){
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -73,7 +73,7 @@ public class TodoController {
     }
 
     @PutMapping("/{id:\\d+}")
-    public ResponseEntity update(@PathVariable Integer id, @RequestBody Todo todo){
+    public ResponseEntity update(@PathVariable Long id, @RequestBody Todo todo){
         JwtUserInfo jwtUserInfo = (JwtUserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Todo oldTodo = todoRepository.findOne(id);
 
@@ -85,7 +85,7 @@ public class TodoController {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        if(todo.getUid()!=null){
+        if(todo.getUid()!=null && todo.getUid()!=oldTodo.getUid()){
             User user = restTemplate.getForEntity("http://USER-SERVICE/users/" + todo.getUid(),User.class).getBody();
             if(user!=null){
                 oldTodo.setUid(todo.getUid());
@@ -115,22 +115,7 @@ public class TodoController {
             oldTodo.setTitle(todo.getTitle());
         }
 
-        if(todo.getDate()!=null){
-            Message msg = new Message(
-                    null,
-                    null,
-                    Long.valueOf(oldCard.getProjectId()),
-                    "PROJECT",
-                    String.format("[%s]将任务[%s]时间修改为[%s]",jwtUserInfo.getLoginName(),oldTodo.getTitle(),
-                            new SimpleDateFormat("yyyy-mm-dd HH:mm:ss")),
-                    new Date
-                            (System
-                                    .currentTimeMillis()));
-            messageList.add(msg);
-            oldTodo.setDate(todo.getDate());
-        }
-
-        if(todo.getCardId()!=null){
+        if(todo.getCardId()!=null && todo.getCardId()!=oldTodo.getCardId()){
             Card card = cardRepository.getOne(todo.getCardId());
             Message msg = new Message(
                     null,
@@ -152,7 +137,7 @@ public class TodoController {
     }
 
     @DeleteMapping("/{id:\\d+}")
-    public ResponseEntity delete(@PathVariable Integer id){
+    public ResponseEntity delete(@PathVariable Long id){
         JwtUserInfo jwtUserInfo = (JwtUserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Todo oldTodo = todoRepository.findOne(id);
 

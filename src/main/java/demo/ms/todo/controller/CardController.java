@@ -64,8 +64,8 @@ public class CardController {
         return cardList;
     }
 
-    @PutMapping("/cards/{id:\\d+}")
-    public ResponseEntity update(@PathVariable Integer id, @RequestBody Card card){
+    @PutMapping("/cards")
+    public ResponseEntity update(@RequestBody Card card){
 
         Card oldCard = cardRepository.findOne(card.getId());
 
@@ -90,7 +90,7 @@ public class CardController {
     }
 
     @GetMapping("/cards/{id:\\d+}")
-    public ResponseEntity find(@PathVariable Integer id){
+    public ResponseEntity find(@PathVariable Long id){
 
         Card oldCard = cardRepository.findOne(id);
         if(oldCard == null){
@@ -103,7 +103,7 @@ public class CardController {
     @PreAuthorize("hasAnyRole('ROLE_PMO','ROLE_ADMIN')")
     @Transactional
     @DeleteMapping("/cards/{id:\\d+}")
-    public ResponseEntity delete(@PathVariable Integer id){
+    public ResponseEntity delete(@PathVariable Long id){
 
         JwtUserInfo jwtUserInfo = (JwtUserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Card oldCard = cardRepository.findOne(id);
@@ -134,7 +134,7 @@ public class CardController {
 
     @GetMapping("/cards")
     public ResponseEntity list(String project){
-        Integer projectId = Integer.parseInt(project);
+        Long projectId = Long.parseLong(project);
         Card userCard = new Card();
         userCard.setProjectId(projectId);
         Example<Card> cardExample = Example.of(userCard);
@@ -144,7 +144,7 @@ public class CardController {
     }
 
     @GetMapping("/cards/{id:\\d+}/todos")
-    public ResponseEntity listTodos(@PathVariable Integer id){
+    public ResponseEntity listTodos(@PathVariable Long id){
         if(!cardRepository.exists(id)){
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
