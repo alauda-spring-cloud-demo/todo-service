@@ -1,6 +1,7 @@
 package demo.ms.todo.controller;
 
 import com.google.common.collect.Lists;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import demo.ms.common.entity.Card;
 import demo.ms.common.entity.Message;
 import demo.ms.common.entity.Todo;
@@ -40,6 +41,7 @@ public class TodoController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @HystrixCommand(commandKey = "GetTodoInfo")
     @GetMapping("/{id:\\d+}")
     public ResponseEntity find(@PathVariable Long id){
         Todo todo = todoRepository.findOne(id);
@@ -50,6 +52,7 @@ public class TodoController {
         return new ResponseEntity(todo,HttpStatus.OK);
     }
 
+    @HystrixCommand(commandKey = "CreateTodo")
     @PostMapping
     public Todo create(@RequestBody Todo todo) throws Exception {
         JwtUserInfo jwtUserInfo = (JwtUserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -72,6 +75,7 @@ public class TodoController {
         return todo;
     }
 
+    @HystrixCommand(commandKey = "UpdateTodo")
     @PutMapping("/{id:\\d+}")
     public ResponseEntity update(@PathVariable Long id, @RequestBody Todo todo){
         JwtUserInfo jwtUserInfo = (JwtUserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -136,6 +140,7 @@ public class TodoController {
         return new ResponseEntity(oldTodo,HttpStatus.OK);
     }
 
+    @HystrixCommand(commandKey = "DeleteTodo")
     @DeleteMapping("/{id:\\d+}")
     public ResponseEntity delete(@PathVariable Long id){
         JwtUserInfo jwtUserInfo = (JwtUserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
