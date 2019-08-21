@@ -36,7 +36,6 @@ public class CardController {
     LoggerEventSink loggerEventSink;
 
 
-    @HystrixCommand(commandKey = "CreateCard")
     @PreAuthorize("hasAnyRole('ROLE_PMO','ROLE_ADMIN')")
     @PostMapping("/cards")
     public Card create(@RequestBody Card card) throws Exception {
@@ -59,14 +58,12 @@ public class CardController {
     }
 
 
-    @HystrixCommand(commandKey = "BatchCreateCard")
     @PostMapping("/cards/batch")
     public List<Card> batchCreate(@RequestBody List<Card> cardList){
         cardRepository.save(cardList);
         return cardList;
     }
 
-    @HystrixCommand(commandKey = "UpdateCard")
     @PutMapping("/cards")
     public ResponseEntity update(@RequestBody Card card){
 
@@ -92,7 +89,6 @@ public class CardController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @HystrixCommand(commandKey = "GetCardById")
     @GetMapping("/cards/{id:\\d+}")
     public ResponseEntity find(@PathVariable Long id){
 
@@ -104,7 +100,6 @@ public class CardController {
         return new ResponseEntity(cardRepository.findOne(id),HttpStatus.OK);
     }
 
-    @HystrixCommand(commandKey = "DeleteCardById")
     @PreAuthorize("hasAnyRole('ROLE_PMO','ROLE_ADMIN')")
     @Transactional
     @DeleteMapping("/cards/{id:\\d+}")
@@ -137,7 +132,6 @@ public class CardController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @HystrixCommand(commandKey = "ListCardsInProject")
     @GetMapping("/cards")
     public ResponseEntity list(String project){
         Long projectId = Long.parseLong(project);
@@ -149,7 +143,6 @@ public class CardController {
         return new ResponseEntity(cardList,HttpStatus.OK);
     }
 
-    @HystrixCommand(commandKey = "ListTodosInCard")
     @GetMapping("/cards/{id:\\d+}/todos")
     public ResponseEntity listTodos(@PathVariable Long id){
         if(!cardRepository.exists(id)){
